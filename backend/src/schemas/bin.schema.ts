@@ -7,4 +7,8 @@ export const binSchema = z.object({
     fill_level: z.number().min(0).max(100)
 });
 
+export const updateBinSchema = z.object({
+    fill_level: z.number().min(0).max(100)
+});
+
 export type BinInput = z.infer<typeof binSchema>;
