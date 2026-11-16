@@ -33,5 +33,5 @@ pool.query("SELECT NOW()")
 app.listen(PORT, () => {
     console.log(`BinFlow server running at http://localhost:${PORT}`);
 
-    startSimulation(5000, 5);
+    // startSimulation(5000, 5);
 });
