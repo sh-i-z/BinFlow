@@ -1,17 +1,36 @@
 import Icon from "./Icon";
+import { getPriority } from "../MapView";
+import type { Bin } from "../../types/bin";
 
-const NAV = [
-    { icon: "home", label: "Home", sub: "" },
-    { icon: "star", label: "Overview", sub: "", current: true },
-    { icon: "flame", label: "Full bins", sub: "6 bins" },
-    { icon: "wave", label: "Overflow zones", sub: "14 zones" },
-    { icon: "claw", label: "Routes", sub: "22 routes" },
-    { icon: "skull", label: "Faulty sensors", sub: "9 sensors" },
-    { icon: "peak", label: "Depots", sub: "11 depots" },
-    { icon: "mask", label: "Collectors", sub: "8 crews" },
-];
+type Props = {
+    bins: Bin[];
+    loading: boolean;
+    filter: string | null;
+    onFilter: (p: string | null) => void;
+    onPick: (bin: Bin) => void;
+};
 
-export default function Sidebar() {
+export default function Sidebar({ bins, loading, filter, onFilter, onPick }: Props) {
+    const count = (p: string) =>
+        bins.filter((b) => getPriority(b.fill_level) === p).length;
+
+    const top = bins.reduce<Bin | null>(
+        (best, b) => (!best || b.fill_level > best.fill_level ? b : best),
+        null
+    );
+
+    const label = (n: number) => (loading ? "…" : `${n} bins`);
+
+    const NAV = [
+        { icon: "home", label: "Overview", sub: label(bins.length), value: null as string | null },
+        { icon: "flame", label: "Critical", sub: label(count("Critical")), value: "Critical" },
+        { icon: "claw", label: "High", sub: label(count("High")), value: "High" },
+        { icon: "wave", label: "Medium", sub: label(count("Medium")), value: "Medium" },
+        { icon: "mask", label: "Low", sub: label(count("Low")), value: "Low" },
+        { icon: "peak", label: "Zones", sub: "soon", off: true },
+        { icon: "skull", label: "Routes", sub: "soon", off: true },
+    ];
+
     return (
         <aside className="side" aria-label="BinFlow sections">
             <div className="brand">
@@ -22,11 +41,15 @@ export default function Sidebar() {
             <ul className="nav">
                 {NAV.map((n) => (
                     <li key={n.label}>
-                        <button aria-current={n.current ? "page" : undefined}>
+                        <button
+                            disabled={n.off}
+                            aria-current={!n.off && filter === n.value ? "page" : undefined}
+                            onClick={() => !n.off && onFilter(n.value ?? null)}
+                        >
                             <Icon name={n.icon} />
                             <span>
                                 {n.label}
-                                {n.sub && <small>{n.sub}</small>}
+                                <small>{n.sub}</small>
                             </span>
                         </button>
                     </li>
@@ -34,12 +57,20 @@ export default function Sidebar() {
             </ul>
 
             <div className="feature">
-                <div className="eyebrow">Featured bin</div>
-                <h3>A city that empties itself.</h3>
-                <p>Fill levels, routes and alerts in one quiet plate.</p>
-                <a href="#detail">
-                    Learn more <Icon name="arrow" size={14} />
-                </a>
+                <div className="eyebrow">Most urgent bin</div>
+                {top ? (
+                    <>
+                        <h3>{top.name}</h3>
+                        <p>
+                            {top.fill_level}% full · {getPriority(top.fill_level)} priority
+                        </p>
+                        <button className="link" onClick={() => onPick(top)}>
+                            Locate on map <Icon name="arrow" size={14} />
+                        </button>
+                    </>
+                ) : (
+                    <p>{loading ? "Loading bins…" : "No bins available."}</p>
+                )}
             </div>
         </aside>
     );

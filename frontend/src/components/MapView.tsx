@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
     MapContainer,
     TileLayer,
@@ -6,9 +6,8 @@ import {
     Tooltip,
     useMap,
 } from "react-leaflet";
-
+import type { Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { getBins } from "../services/binService";
 import type { Bin } from "../types/bin";
 
 export function getBinColor(fillLevel: number): string {
@@ -25,7 +24,7 @@ export function getPriority(fill: number): string {
     return "Low";
 }
 
-/* Map ko container ka size badalne par dobara measure karwata hai */
+/* Container ka size badalne par map dobara measure hota hai */
 function FixSize() {
     const map = useMap();
 
@@ -43,27 +42,41 @@ function FixSize() {
     return null;
 }
 
-type Props = {
-    selectedId?: number | string | null;
-    onSelect: (bin: Bin) => void;
-};
-
-function MapView({ selectedId, onSelect }: Props) {
-    const [bins, setBins] = useState<Bin[]>([]);
+/* Map instance Dashboard ko de deta hai, taaki zoom buttons chal sakein */
+function ExposeMap({ onReady }: { onReady?: (m: LeafletMap) => void }) {
+    const map = useMap();
 
     useEffect(() => {
-        const fetchBins = async () => {
-            try {
-                const data = await getBins();
-                setBins(data);
-            } catch (error) {
-                console.error("Error fetching bins:", error);
-            }
-        };
+        onReady?.(map);
+    }, [map, onReady]);
 
-        fetchBins();
-    }, []);
+    return null;
+}
 
+/* Selected bin par map ko le jata hai */
+function FlyToSelected({ bin }: { bin: Bin | null }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (!bin) return;
+        map.flyTo([bin.latitude, bin.longitude], Math.max(map.getZoom(), 15), {
+            duration: 0.8,
+        });
+        // sirf bin badalne par chale, data refresh par nahi
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [bin?.id, map]);
+
+    return null;
+}
+
+type Props = {
+    bins: Bin[];
+    selected: Bin | null;
+    onSelect: (bin: Bin) => void;
+    onReady?: (m: LeafletMap) => void;
+};
+
+function MapView({ bins, selected, onSelect, onReady }: Props) {
     return (
         <MapContainer
             center={[28.6139, 77.209]}
@@ -72,6 +85,8 @@ function MapView({ selectedId, onSelect }: Props) {
             style={{ height: "100%", width: "100%" }}
         >
             <FixSize />
+            <ExposeMap onReady={onReady} />
+            <FlyToSelected bin={selected} />
 
             <TileLayer
                 attribution="&copy; OpenStreetMap contributors"
@@ -80,16 +95,16 @@ function MapView({ selectedId, onSelect }: Props) {
 
             {bins.map((bin) => {
                 const color = getBinColor(bin.fill_level);
-                const selected = bin.id === selectedId;
+                const isSelected = bin.id === selected?.id;
 
                 return (
                     <CircleMarker
                         key={bin.id}
                         center={[bin.latitude, bin.longitude]}
-                        radius={selected ? 13 : 9}
+                        radius={isSelected ? 13 : 9}
                         pathOptions={{
-                            color: selected ? "#241c14" : color,
-                            weight: selected ? 2 : 1,
+                            color: isSelected ? "#241c14" : color,
+                            weight: isSelected ? 2 : 1,
                             fillColor: color,
                             fillOpacity: 0.85,
                         }}

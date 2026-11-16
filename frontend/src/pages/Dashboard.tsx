@@ -1,14 +1,43 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import type { Map as LeafletMap } from "leaflet";
 import "../atlas.css";
 import Sidebar from "../components/layout/Sidebar";
 import Icon from "../components/layout/Icon";
 import MapView, { getPriority } from "../components/MapView";
+import { getBins } from "../services/binService";
 import type { Bin } from "../types/bin";
 
+const REFRESH_MS = 30000;
+
 export default function Dashboard() {
-    const [selected, setSelected] = useState<Bin | null>(null);
+    const [bins, setBins] = useState<Bin[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [selectedId, setSelectedId] = useState<Bin["id"] | null>(null);
+    const [filter, setFilter] = useState<string | null>(null);
+    const [query, setQuery] = useState("");
+    const [map, setMap] = useState<LeafletMap | null>(null);
     const [dusk, setDusk] = useState(false);
     const [focus, setFocus] = useState(false);
+
+    const load = useCallback(async () => {
+        try {
+            const data = await getBins();
+            setBins(data);
+            setError(false);
+        } catch (e) {
+            console.error("Error fetching bins:", e);
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        load();
+        const id = setInterval(load, REFRESH_MS);
+        return () => clearInterval(id);
+    }, [load]);
 
     useEffect(() => {
         document.body.style.background = dusk ? "#14170f" : "";
@@ -20,26 +49,65 @@ export default function Dashboard() {
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
+    const q = query.trim().toLowerCase();
+    const visible = bins.filter(
+        (b) =>
+            (!filter || getPriority(b.fill_level) === filter) &&
+            (!q || b.name.toLowerCase().includes(q) || String(b.id) === q)
+    );
+    const filtering = Boolean(filter || q);
+
+    const selected = bins.find((b) => b.id === selectedId) ?? null;
     const priority = selected ? getPriority(selected.fill_level) : "";
+    const pick = (b: Bin) => setSelectedId(b.id);
+
+    const caption = error
+        ? "Cannot reach the API. Is the backend running?"
+        : loading
+            ? "Loading bins…"
+            : selected
+                ? selected.name
+                : filtering
+                    ? `${visible.length} of ${bins.length} bins shown`
+                    : "Tap a bin to read its plate.";
+
+    const i = (n: number) => ({ ["--i" as string]: n });
 
     return (
         <main
             className={`hero${focus ? " focus" : ""}`}
             data-light={dusk ? "dusk" : "day"}
         >
-            <Sidebar />
+            <div className="stage-map">
+                <MapView
+                    bins={visible}
+                    selected={selected}
+                    onSelect={pick}
+                    onReady={setMap}
+                />
+            </div>
+
+            <Sidebar
+                bins={bins}
+                loading={loading}
+                filter={filter}
+                onFilter={setFilter}
+                onPick={pick}
+            />
 
             <section className="main">
                 <div className="stage">
-                    <div className="stage-map">
-                        <MapView selectedId={selected?.id} onSelect={setSelected} />
-                    </div>
-
                     <div className="plate" aria-hidden="true">
                         <i /><i /><i /><i />
                     </div>
 
                     <div className="rail" role="toolbar" aria-label="Viewer tools">
+                        <button aria-label="Zoom in" onClick={() => map?.zoomIn()}>
+                            <Icon name="plus" size={17} />
+                        </button>
+                        <button aria-label="Zoom out" onClick={() => map?.zoomOut()}>
+                            <Icon name="minus" size={17} />
+                        </button>
                         <button
                             className={focus ? "on" : ""}
                             aria-pressed={focus}
@@ -65,9 +133,7 @@ export default function Dashboard() {
                         <li><span style={{ background: "#b4402a" }} />Critical</li>
                     </ul>
 
-                    <p className="caption">
-                        {selected ? selected.name : "Tap a bin to read its plate."}
-                    </p>
+                    <p className="caption">{caption}</p>
                 </div>
             </section>
 
@@ -75,7 +141,11 @@ export default function Dashboard() {
                 <div className="top">
                     <label className="search">
                         <Icon name="search" size={15} />
-                        <input placeholder="Search bins, zones, or routes…" />
+                        <input
+                            placeholder="Search bins by name or ID…"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
                     </label>
                     <button className="iconbtn" aria-label="Notifications">
                         <Icon name="bell" size={18} />
@@ -88,18 +158,18 @@ export default function Dashboard() {
                 <div className="card">
                     {selected ? (
                         <article className="detail" key={String(selected.id)} aria-live="polite">
-                            <div className="eyebrow" style={{ ["--i" as string]: 0 }}>
-                                Bin · Specimen {String(selected.id).padStart(3, "0")}
+                            <div className="eyebrow" style={i(0)}>
+                                Bin · No. {String(selected.id).padStart(3, "0")}
                             </div>
-                            <h1 style={{ ["--i" as string]: 1 }}>
+                            <h1 style={i(1)}>
                                 {selected.name}
-                                <em>Smart bin</em>
+                                <em>{priority} priority</em>
                             </h1>
-                            <div className="tags" style={{ ["--i" as string]: 2 }}>
+                            <div className="tags" style={i(2)}>
                                 <span>{priority}</span>
                                 <span>{selected.fill_level}% full</span>
                             </div>
-                            <p className="lede" style={{ ["--i" as string]: 3 }}>
+                            <p className="lede" style={i(3)}>
                                 {priority === "Critical"
                                     ? "Close to overflowing. Send a collector as soon as possible."
                                     : priority === "High"
@@ -109,44 +179,27 @@ export default function Dashboard() {
                                             : "Plenty of room. Nothing to do here."}
                             </p>
 
-                            <div className="era" style={{ ["--i" as string]: 4 }}>
+                            <div className="era" style={i(4)}>
                                 <div className="bar">
                                     <b /><b /><b />
-                                    <u style={{ left: 0, width: `${Math.max(.6, selected.fill_level)}%` }} />
+                                    <u style={{ left: 0, width: `${Math.max(0.6, selected.fill_level)}%` }} />
                                 </div>
                                 <div className="lab">
                                     <span>Empty</span><span>Half</span><span>Full</span>
                                 </div>
                             </div>
 
-                            <h2 style={{ ["--i" as string]: 5 }}>Field notes</h2>
-                            <dl className="traits" style={{ ["--i" as string]: 6 }}>
+                            <h2 style={i(5)}>Field notes</h2>
+                            <dl className="traits" style={i(6)}>
                                 <div><Icon name="ruler" size={18} /><dt>Fill level</dt><dd>{selected.fill_level}%</dd></div>
                                 <div><Icon name="time" size={18} /><dt>Priority</dt><dd>{priority}</dd></div>
                                 <div><Icon name="range" size={18} /><dt>Latitude</dt><dd>{Number(selected.latitude).toFixed(4)}</dd></div>
                                 <div><Icon name="range" size={18} /><dt>Longitude</dt><dd>{Number(selected.longitude).toFixed(4)}</dd></div>
                             </dl>
-
-                            <h2 style={{ ["--i" as string]: 7 }}>Haunts</h2>
-                            <div className="habitat" style={{ ["--i" as string]: 8 }}>
-                                <Icon name="reed" size={18} />
-                                <span>Delhi, {Number(selected.latitude).toFixed(3)}°N, {Number(selected.longitude).toFixed(3)}°E</span>
-                            </div>
-
-                            <div className="closeup-wrap" style={{ ["--i" as string]: 9 }}>
-                                <button className="closeup">
-                                    <div className="lens" />
-                                    <span>
-                                        <b>Dispatch collector</b>
-                                        <small>Assign a crew to empty this bin.</small>
-                                    </span>
-                                    <Icon name="chev" size={18} />
-                                </button>
-                            </div>
                         </article>
                     ) : (
                         <article className="detail empty">
-                            <div className="eyebrow">No specimen selected</div>
+                            <div className="eyebrow">No bin selected</div>
                             <h1>Pick a bin<em>on the map</em></h1>
                             <p className="lede">
                                 Click any marker on the plate to read its fill level, priority and location here.
