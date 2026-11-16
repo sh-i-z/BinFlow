@@ -5,6 +5,7 @@ import { pool } from "./config/db";
 import { startSimulation } from "./simulator/simulationEngine";
 import hexagonRoutes from "./routes/hexagon.route";
 import dispatchRoutes from "./routes/dispatch.route";
+import truckRouteRoutes from "./routes/truckRoute.route";
 
 const app = express();
 const PORT = 3000;
@@ -24,6 +25,7 @@ app.use("/bins", binRoutes);
 app.use("/bins", simulatorRoutes);
 app.use("/hexagons", hexagonRoutes);
 app.use("/dispatch", dispatchRoutes);
+app.use("/routes", truckRouteRoutes);
 
 pool.query("SELECT NOW()")
     .then((result) => {
