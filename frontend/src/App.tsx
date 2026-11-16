@@ -1,8 +1,5 @@
+import Dashboard from "./pages/Dashboard";
 
-import MapView from "./components/MapView";
-
-function App() {
-  return <MapView />;
+export default function App() {
+  return <Dashboard />;
 }
-
-export default App;
