@@ -21,6 +21,13 @@ export const getBinsWithH3Cells = async () => {
     return binsWithCells;
 };
 
+
+// what is happening till here ->
+// PostgreSQL se saare bins fetch ho rahe hain.
+// .map() har bin par iterate karta hai.
+// getBinCell() uske coordinates ko H3 ID mein convert karta hai.
+// Original bin data ke saath h3CellId attach ho jaati hai.
+
 export const groupBinsByHexagon = async () => {
     const bins = await getBinsWithH3Cells();
 
@@ -39,10 +46,33 @@ export const groupBinsByHexagon = async () => {
     return hexagonMap;
 };
 
+// table of bin vs fill%
+export const getHexagonStats = async () => {
+    const hexagonMap = await groupBinsByHexagon();
+
+    const hexagonStats = [];
+
+    for (const [cellId, bins] of hexagonMap) {
+        const totalFill = bins.reduce(
+            (sum, bin) => sum + bin.fill_level,
+            0
+        );
+
+        const averageFill = totalFill / bins.length;
+
+        hexagonStats.push({
+            h3CellId: cellId,
+            binCount: bins.length,
+            averageFill: Number(averageFill.toFixed(2))
+        });
+    }
+
+    return hexagonStats;
+    // - reduce() sabhi fill levels ka sum calculate karta hai.
+    // - bins.length total bins batata hai.
+    // - Sum ko total bins se divide karke average nikalta hai.
+    // Result: 85% average fill.
+};
 
 
-// what is happening here ->
-// PostgreSQL se saare bins fetch ho rahe hain.
-// .map() har bin par iterate karta hai.
-// getBinCell() uske coordinates ko H3 ID mein convert karta hai.
-// Original bin data ke saath h3CellId attach ho jaati hai.
+
