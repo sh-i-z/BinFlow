@@ -2,8 +2,10 @@
 import { Router, Request, Response } from "express";
 import {
     getBinsWithH3Cells,
-    getHexagonStats
+    getHexagonStats,
+    getHexagonsWithBoundaries
 } from "../services/hexagonService";
+
 const router = Router();
 
 router.get("/", async (_req: Request, res: Response) => {
@@ -40,5 +42,22 @@ router.get("/stats", async (_req: Request, res: Response) => {
     }
 });
 
+
+router.get("/boundaries", async (_req: Request, res: Response) => {
+    try {
+        const hexagons = await getHexagonsWithBoundaries();
+
+        res.status(200).json({
+            totalHexagons: hexagons.length,
+            hexagons
+        });
+    } catch (error) {
+        console.error("Error fetching hexagon boundaries:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch hexagon boundaries"
+        });
+    }
+});
 
 export default router;

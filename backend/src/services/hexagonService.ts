@@ -1,6 +1,10 @@
 
 import { pool } from "../config/db";
-import { getBinCell } from "../geospatial/h3Converter";
+import {
+    getBinCell,
+    getHexagonBoundary
+} from "../geospatial/h3Converter";
+import { getBinPriority } from "../utils/binPriority";
 
 export const getBinsWithH3Cells = async () => {
     const result = await pool.query(
@@ -63,7 +67,8 @@ export const getHexagonStats = async () => {
         hexagonStats.push({
             h3CellId: cellId,
             binCount: bins.length,
-            averageFill: Number(averageFill.toFixed(2))
+            averageFill: Number(averageFill.toFixed(2)),
+            priority: getBinPriority(averageFill)
         });
     }
 
@@ -73,6 +78,17 @@ export const getHexagonStats = async () => {
     // - Sum ko total bins se divide karke average nikalta hai.
     // Result: 85% average fill.
 };
+
+
+export const getHexagonsWithBoundaries = async () => {
+    const stats = await getHexagonStats();
+
+    return stats.map((hexagon) => ({
+        ...hexagon,
+        boundary: getHexagonBoundary(hexagon.h3CellId)
+    }));
+};
+
 
 
 
