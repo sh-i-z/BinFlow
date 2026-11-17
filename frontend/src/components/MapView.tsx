@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import {
     MapContainer,
     TileLayer,
@@ -6,6 +6,7 @@ import {
     Tooltip,
     useMap,
 } from "react-leaflet";
+import L from "leaflet";
 import type { Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Bin } from "../types/bin";
@@ -24,7 +25,6 @@ export function getPriority(fill: number): string {
     return "Low";
 }
 
-/* Container ka size badalne par map dobara measure hota hai */
 function FixSize() {
     const map = useMap();
 
@@ -42,7 +42,6 @@ function FixSize() {
     return null;
 }
 
-/* Map instance Dashboard ko de deta hai, taaki zoom buttons chal sakein */
 function ExposeMap({ onReady }: { onReady?: (m: LeafletMap) => void }) {
     const map = useMap();
 
@@ -53,7 +52,34 @@ function ExposeMap({ onReady }: { onReady?: (m: LeafletMap) => void }) {
     return null;
 }
 
-/* Selected bin par map ko le jata hai */
+/* Map ko bins ke area tak restrict karta hai */
+function LockToBins({ bins }: { bins: Bin[] }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (bins.length === 0) return;
+
+        const bounds = L.latLngBounds(
+            bins.map((b) => [b.latitude, b.longitude] as [number, number])
+        ).pad(0.25);
+
+        map.setMaxBounds(bounds);
+        map.options.maxBoundsViscosity = 1.0;
+
+        const fitZoom = map.getBoundsZoom(bounds);
+        map.setMinZoom(fitZoom);
+
+        if (!map.getBounds().intersects(bounds)) {
+            map.fitBounds(bounds);
+        } else if (map.getZoom() < fitZoom) {
+            map.setZoom(fitZoom);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [bins.length, map]);
+
+    return null;
+}
+
 function FlyToSelected({ bin }: { bin: Bin | null }) {
     const map = useMap();
 
@@ -62,7 +88,6 @@ function FlyToSelected({ bin }: { bin: Bin | null }) {
         map.flyTo([bin.latitude, bin.longitude], Math.max(map.getZoom(), 15), {
             duration: 0.8,
         });
-        // sirf bin badalne par chale, data refresh par nahi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bin?.id, map]);
 
@@ -71,12 +96,14 @@ function FlyToSelected({ bin }: { bin: Bin | null }) {
 
 type Props = {
     bins: Bin[];
+    allBins: Bin[];
     selected: Bin | null;
     onSelect: (bin: Bin) => void;
     onReady?: (m: LeafletMap) => void;
+    children?: ReactNode;
 };
 
-function MapView({ bins, selected, onSelect, onReady }: Props) {
+function MapView({ bins, allBins, selected, onSelect, onReady, children }: Props) {
     return (
         <MapContainer
             center={[28.6139, 77.209]}
@@ -86,6 +113,7 @@ function MapView({ bins, selected, onSelect, onReady }: Props) {
         >
             <FixSize />
             <ExposeMap onReady={onReady} />
+            <LockToBins bins={allBins} />
             <FlyToSelected bin={selected} />
 
             <TileLayer
@@ -116,6 +144,8 @@ function MapView({ bins, selected, onSelect, onReady }: Props) {
                     </CircleMarker>
                 );
             })}
+
+            {children}
         </MapContainer>
     );
 }
