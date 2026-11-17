@@ -860,3 +860,589 @@
 .hero.focus .leaflet-bottom.leaflet-right {
     right: 0;
 }
+
+.action-wrap {
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+.action {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-radius: 3px;
+    font-family: var(--serif);
+    font-size: 17px;
+    transition: opacity .2s, transform .15s;
+}
+
+.action:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.action:active:not(:disabled) {
+    transform: scale(.99);
+}
+
+.action:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+.action-error {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--accent);
+}
+
+
+
+/* ---------- truck panel ---------- */
+.sim {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    z-index: 6;
+    width: 250px;
+    padding: 12px 14px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: 0 2px 10px rgba(var(--shadow), .12);
+    pointer-events: auto;
+}
+
+.sim h4 {
+    margin-top: 6px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: -.01em;
+}
+
+.sim-text {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--muted);
+}
+
+.sim-meta {
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .04em;
+    color: var(--muted);
+}
+
+.sim-bar {
+    margin-top: 10px;
+    height: 4px;
+    background: var(--chip);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.sim-bar u {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    text-decoration: none;
+}
+
+.sim-controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.sim-btn {
+    min-width: 34px;
+    height: 30px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+}
+
+.sim-btn:hover {
+    border-color: var(--accent);
+}
+
+.sim-btn.wide {
+    flex: 1;
+    width: 100%;
+    margin-top: 10px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    font-family: var(--sans);
+    font-size: 12px;
+}
+
+.sim-controls .sim-btn.wide {
+    margin-top: 0;
+}
+
+/* ---------- route markers ---------- */
+.truck-dot {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    box-shadow: 0 2px 8px rgba(var(--shadow), .35);
+}
+
+.stop-pin span,
+.depot-pin span {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.stop-pin span {
+    border-radius: 50%;
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    color: var(--ink);
+}
+
+.stop-pin.done span {
+    background: #5f7f4b;
+    border-color: #5f7f4b;
+    color: #fff;
+}
+
+.depot-pin span {
+    border-radius: 3px;
+    background: var(--ink);
+    color: var(--bg);
+}
+
+.nav {
+    flex: none;
+}
+
+.queue {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+.queue ol {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.queue li button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 3px;
+    font-size: 12.5px;
+    text-align: left;
+}
+
+.queue li button:hover {
+    background: var(--chip);
+}
+
+.q-rank {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.q-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.q-fill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.q-fill i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.queue-empty {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* fleet */
+/* ---------- page nav ---------- */
+.pages {
+    margin-top: 16px;
+    display: grid;
+    gap: 2px;
+}
+
+.pages a,
+.pages .off {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: inset 2px 0 0 transparent;
+}
+
+.pages a:hover {
+    background: var(--chip);
+}
+
+.pages a[aria-current="page"] {
+    background: var(--accent-tint);
+    box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.pages .off {
+    opacity: .45;
+}
+
+.pages small {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--muted);
+}
+
+.nav {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+/* ---------- fleet page ---------- */
+.hero.page {
+    grid-template-columns: 196px minmax(0, 1fr);
+}
+
+.hero.page .side {
+    margin: 14px 0 14px 14px;
+}
+
+.page-main {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 32px 34px 40px 28px;
+    scrollbar-width: thin;
+}
+
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.page-head h1 {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(42px, 4.4vw, 58px);
+    line-height: .96;
+    letter-spacing: -.035em;
+    font-variation-settings: "opsz" 144;
+}
+
+.page-head h1 em {
+    display: block;
+    margin-top: 8px;
+    font-size: .3em;
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--muted);
+}
+
+.page-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    border: 1px dashed var(--accent);
+    color: var(--accent);
+    border-radius: 2px;
+}
+
+.iconbtn.sq {
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+}
+
+.iconbtn.sq.on {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+}
+
+.stats {
+    margin-top: 26px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 3px var(--panel), inset 0 0 0 4px var(--line);
+    animation: rise .6s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.stat svg {
+    color: var(--accent);
+}
+
+.stat b {
+    display: block;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 26px;
+    letter-spacing: -.02em;
+}
+
+.stat small {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.list-title {
+    margin-top: 28px;
+}
+
+.page-note {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.trucks {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+}
+
+.truck {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 18px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 4px var(--panel), inset 0 0 0 5px var(--line);
+    animation: rise .6s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.truck-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.truck-head h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: -.01em;
+}
+
+.truck-ico {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    background: var(--chip);
+    border-radius: 3px;
+}
+
+.status {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .06em;
+    padding: 4px 8px;
+    border-radius: 2px;
+    border: 1px solid var(--line);
+}
+
+.status.s-active {
+    background: var(--accent-tint);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.status.s-maint {
+    color: var(--muted);
+    border-style: dashed;
+}
+
+.truck .traits {
+    margin-top: 14px;
+}
+
+.meter {
+    margin-top: 12px;
+}
+
+.meter-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.meter-row b {
+    color: var(--ink);
+    font-weight: 500;
+    font-family: var(--mono);
+    font-size: 11px;
+}
+
+.meter-bar {
+    margin-top: 5px;
+    height: 5px;
+    background: var(--chip);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.meter-bar u {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    text-decoration: none;
+    transition: width .6s var(--ease);
+}
+
+.meter-bar u.hot {
+    background: #b4402a;
+}
+
+.assigned-title {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+.assigned {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: grid;
+    gap: 4px;
+}
+
+.assigned li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+}
+
+.assigned .more {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10.5px;
+}
+
+.truck-actions {
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+.truck-actions .sim-btn.wide {
+    margin-top: 0;
+    display: inline-flex;
+    gap: 8px;
+    height: 36px;
+}
+
+.truck-actions .sim-btn:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+@media (max-width: 900px) {
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .hero.page {
+        display: block;
+        overflow-y: auto;
+    }
+
+    .hero.page .side {
+        display: none;
+    }
+
+    .page-main {
+        padding: 20px 16px 30px;
+    }
+}
