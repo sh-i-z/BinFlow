@@ -6,9 +6,11 @@ import { startSimulation } from "./simulator/simulationEngine";
 import hexagonRoutes from "./routes/hexagon.route";
 import dispatchRoutes from "./routes/dispatch.route";
 import truckRouteRoutes from "./routes/truckRoute.route";
+import cors from "cors";
 
 const app = express();
-const PORT = 3000;
+app.use(cors());
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
@@ -39,5 +41,5 @@ pool.query("SELECT NOW()")
 app.listen(PORT, () => {
     console.log(`BinFlow server running at http://localhost:${PORT}`);
 
-    // startSimulation(5000, 5);
+    startSimulation(7000, 2.5);
 });
