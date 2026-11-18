@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Dashboard from "./pages/Dashboard";
 import FleetPage from "./pages/FleetPage";
+import RoutesPage from "./pages/RoutesPage";
 
 const read = () => window.location.hash.replace(/^#\/?/, "") || "overview";
 
@@ -13,5 +14,7 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  return page === "fleet" ? <FleetPage /> : <Dashboard />;
+  if (page === "fleet") return <FleetPage />;
+  if (page === "routes") return <RoutesPage />;
+  return <Dashboard />;
 }
