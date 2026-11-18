@@ -3,6 +3,7 @@ import Icon from "./Icon";
 const PAGES = [
     { href: "#/", id: "overview", icon: "home", label: "Overview" },
     { href: "#/fleet", id: "fleet", icon: "truck", label: "Fleet" },
+    { href: "#/routes", id: "routes", icon: "hex", label: "Routes" },
     { id: "analytics", icon: "ruler", label: "Analytics", off: true },
     { id: "history", icon: "time", label: "History", off: true },
 ];
