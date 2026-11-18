@@ -6,6 +6,7 @@ import { startSimulation } from "./simulator/simulationEngine";
 import hexagonRoutes from "./routes/hexagon.route";
 import dispatchRoutes from "./routes/dispatch.route";
 import truckRouteRoutes from "./routes/truckRoute.route";
+import truckRoutes from "./routes/truck.route";
 import cors from "cors";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/bins", simulatorRoutes);
 app.use("/hexagons", hexagonRoutes);
 app.use("/dispatch", dispatchRoutes);
 app.use("/routes", truckRouteRoutes);
+app.use("/trucks", truckRoutes);
 
 pool.query("SELECT NOW()")
     .then((result) => {
