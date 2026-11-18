@@ -1446,3 +1446,259 @@
         padding: 20px 16px 30px;
     }
 }
+
+/* ---------- route optimization ---------- */
+.compare {
+    margin-top: 12px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 4px var(--panel), inset 0 0 0 5px var(--line);
+    padding: 12px 20px;
+    animation: rise .6s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.cmp-head,
+.cmp-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr .8fr;
+    gap: 12px;
+    align-items: center;
+}
+
+.cmp-head {
+    padding: 6px 0 10px;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+}
+
+.cmp-row {
+    padding: 9px 0;
+    font-size: 13px;
+    border-bottom: 1px dotted var(--line);
+}
+
+.cmp-row:last-child {
+    border-bottom: 0;
+}
+
+.mono {
+    font-family: var(--mono);
+    font-size: 12px;
+}
+
+.strong {
+    font-weight: 500;
+}
+
+.delta {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    text-align: right;
+}
+
+.delta.g {
+    color: #5f7f4b;
+}
+
+.delta.x {
+    color: #b4402a;
+}
+
+.delta.n {
+    color: var(--muted);
+}
+
+.cmp-head span:last-child {
+    text-align: right;
+}
+
+.workload {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+    animation: rise .6s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.wl-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+}
+
+.wl-row b {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 15px;
+}
+
+.wl-bars {
+    display: grid;
+    gap: 6px;
+}
+
+.wl-line {
+    display: grid;
+    grid-template-columns: 60px 1fr 140px;
+    gap: 10px;
+    align-items: center;
+}
+
+.wl-line small {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.wl-line .mono {
+    font-size: 10.5px;
+    color: var(--muted);
+    text-align: right;
+}
+
+.meter-bar u.base {
+    background: var(--muted);
+    opacity: .55;
+}
+
+.rcards {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+}
+
+.rcard {
+    padding: 12px 14px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    animation: rise .6s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.rcard header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.rcard header b {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--ink);
+}
+
+.mini {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+}
+
+.mini-grid line {
+    stroke: var(--line);
+    stroke-width: 1;
+}
+
+.mini-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.mini-stop {
+    fill: var(--panel);
+    stroke: var(--accent);
+    stroke-width: 2;
+}
+
+.mini-depot {
+    fill: var(--ink);
+}
+
+.rcard dl {
+    margin: 10px 0 0;
+    display: grid;
+    gap: 5px;
+}
+
+.rcard dl>div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.rcard dt {
+    color: var(--muted);
+}
+
+.rcard dd {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+}
+
+.dot.running {
+    background: var(--accent);
+}
+
+.dot.completed {
+    background: #5f7f4b;
+}
+
+@media (max-width: 760px) {
+
+    .cmp-head,
+    .cmp-row {
+        grid-template-columns: 1.3fr 1fr 1fr;
+    }
+
+    .cmp-head span:last-child,
+    .cmp-row .delta {
+        display: none;
+    }
+
+    .wl-row {
+        grid-template-columns: 1fr;
+    }
+
+    .wl-line {
+        grid-template-columns: 56px 1fr;
+    }
+
+    .wl-line .mono {
+        grid-column: 1 / -1;
+        text-align: left;
+    }
+}
